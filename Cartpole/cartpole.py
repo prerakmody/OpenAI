@@ -48,23 +48,33 @@ if __name__ == '__main__':
 	numRuns = 10
 	avgReward = 0
 	for i_episode in range(numEpisodes):
-		tmp_reward = 0
+		tmp_reward = 0   #calculate reward for this particular episode
 		prev_observation = env.reset() #x, x_dot, theta, theta_dot = state (position, velocity, angular position, angular velocity)
 		for t in range(100):
 			env.render()
 			# action = env.action_space.sample()
 			action = cart.getAction(prev_observation)
 			new_observation, reward, done, info = env.step(action)
-			cart.updates(reward, np.array(prev_observation), np.array(new_observation))
-			prev_observation = new_observation
-			if logging: print '--->',action, new_observation, reward, done, info
+			# if logging: print '--->',action, new_observation, reward, done, info
 			if done:
-				print('Episode finished(pole dropped) after ',t+1, ' timesteps. (Mean:',cart.mean, ' Variance:',cart.sigma,')')
-				avgReward += tmp_reward
+				reward = 0   #its weird that inspite of done == 1, the reward is still passed as 1??. Hence had to manually make it zero.
+				cart.updates(reward, np.array(prev_observation), np.array(new_observation))
+				print 'Episode finished(pole dropped) after ',t+1, ' timesteps. (Mean:',cart.mean, ' Variance:',cart.sigma,' Reward:',reward,')'
+				print '------------------------------------------------------------------------------------------------------------------------------------'
+				avgReward += tmp_reward   #check the last line to understand this
 				break
 			else:
+				cart.updates(reward, np.array(prev_observation), np.array(new_observation))
 				tmp_reward += reward
+			prev_observation = new_observation
+				
 
 	print '==========================TEST=========================='
 	print 'Avg Reward:', float(avgReward)/(numEpisodes*1.0)
 
+"""
+Issues Faced
+0. This environment requires action that are [0,1]. But ACRL gives us a normal distro value. How to convert that to binary value?? 
+1. The Avg reward does not go above 20. 
+2. The delta values increase over time, due to which my mean for normal-distro becomes really large and I only get one kind of action. 
+"""

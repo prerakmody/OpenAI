@@ -6,6 +6,11 @@ from tiles import *
 
 class ACRL2():
 	def __init__(self,gamma = 1, alphaSig = 0, alphaV = 0.1, alphaU = 0.01, lmbda = 0.75, n = 2048, logging = 0):
+		print 'Gamma:', gamma
+		print 'AlphaV:',alphaV
+		print 'AlphaMean:', alphaU
+		print 'AlphaSigma:',alphaSig
+
 		self.logging = logging
 		n = 4
 		self.gamma = gamma		#for how much of the next value function to consider. Usually ~ 1 (TD-learning)
@@ -52,13 +57,14 @@ class ACRL2():
 
 		self.action = np.random.normal(self.mean,self.sigma)
 		if self.logging: 
-			print 'ACRL().getAction():Mean:',self.mean,' Sigma:',self.sigma, ' Action:',self.action,  1 if self.action > 0.7 else 0
+			print '--ACRL().getAction():Mean:',self.mean,' Sigma:',self.sigma, ' Action:',self.action,  1 if self.action > 0.7 else 0
 		return 1 if abs(self.action) > 0.5 else 0
 
 	def updates(self, reward, prev_state, new_state):
 		self.nextValue = self.Value(new_state)
 		self.value = self.Value(prev_state)
 
+		if self.logging: print 'ACRL().updates(): Diff:', self.nextValue, self.value, self.gamma*self.nextValue - self.value
 		self.delta = reward + self.gamma*self.nextValue - self.value
 
 		self.update_EV(prev_state)   #to update eligibility traces, you need prev_state
@@ -84,6 +90,7 @@ class ACRL2():
 		self.e_mu = self.lmbda*self.e_mu + (self.action-self.mean)* prev_state
 
 	def update_mu(self):
+		if self.logging: print 'ACRL().update_mu(): W_mu:',self.w_mu, ' Delta:',self.delta, ' Eligibility_Mu:',self.e_mu
 		self.w_mu = self.w_mu + self.alphaU*self.delta*self.e_mu
 
 	def update_Esigma(self, prev_state):
