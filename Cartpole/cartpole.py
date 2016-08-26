@@ -9,6 +9,7 @@ from ACRL2 import *
 numTilings = 8
 cTableSize = 8192
 cTable = CollisionTable(cTableSize, 'safe') 
+print cTable
 F = np.zeros(numTilings)
 n = cTableSize
 
@@ -44,7 +45,7 @@ def loadFeatures(stateVars, featureVector):
 
 if __name__ == '__main__':
 	print '==========================TEST=========================='
-	numEpisodes = 100
+	numEpisodes = 0
 	numRuns = 10
 	avgReward = 0
 	for i_episode in range(numEpisodes):
@@ -54,7 +55,7 @@ if __name__ == '__main__':
 			env.render()
 			# action = env.action_space.sample()
 			action = cart.getAction(prev_observation)
-			new_observation, reward, done, info = env.step(action)
+			new_observation, reward, done, info = env.step(action)   #this will form part of tile coding: (new_observation, reward), (X,y)
 			# if logging: print '--->',action, new_observation, reward, done, info
 			if done:
 				reward = 0   #its weird that inspite of done == 1, the reward is still passed as 1??. Hence had to manually make it zero.

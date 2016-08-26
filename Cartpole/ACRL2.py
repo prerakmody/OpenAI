@@ -61,7 +61,7 @@ class ACRL2():
 		return 1 if abs(self.action) > 0.5 else 0
 
 	def updates(self, reward, prev_state, new_state):
-		self.nextValue = self.Value(new_state)
+		self.nextValue = self.Value(new_state)   #need to use tile coding to convert the state-space into a higher dimensional space and have weights in that space
 		self.value = self.Value(prev_state)
 
 		if self.logging: print 'ACRL().updates(): Diff:', self.nextValue, self.value, self.gamma*self.nextValue - self.value
