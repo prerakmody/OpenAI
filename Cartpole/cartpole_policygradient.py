@@ -20,7 +20,7 @@ def policy_gradient():
         params = tf.get_variable("policy_parameters",[4,2])
         state = tf.placeholder("float",[None,4])
         actions = tf.placeholder("float",[None,2])       # The vector actions is a one-hot vector, with a one at the action we want to increase the probability of.
-        advantages = tf.placeholder("float",[None,1])    #??? this is like the Y
+        advantages = tf.placeholder("float",[None,1])    #scaling factor to determine how much change in the policy ddo you want
         linear = tf.matmul(state,params)                 #[None,4] * [4,2] = [None,2]
         probabilities = tf.nn.softmax(linear)
         good_probabilities = tf.reduce_sum(tf.mul(probabilities, actions),reduction_indices=[1])
@@ -89,7 +89,7 @@ def run_episode(env, policy_grad, value_grad, sess):        #sess is a tensorflo
         currentval = sess.run(vl_calculated,feed_dict={vl_state: obs_vector})[0][0] #get the scalr value from value function for a particular state
 
         # advantage: how much better was this action than normal
-        advantages.append(future_reward - currentval)
+        advantages.append(future_reward - currentval)           #a measure of success
 
         # update the value function towards new return
         update_vals.append(future_reward)
